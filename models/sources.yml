@@ -1,8 +1,47 @@
 version: 2
-
 sources:
-  - name: postgres_public
+  - name: pipedrive_crm
     database: postgres
     schema: public
     tables:
       - name: activity
+        columns:
+          - name: activity_id
+          - name: type
+          - name: assigned_to_user
+          - name: deal_id
+          - name: done
+          - name: due_to
+
+      - name: activity_types
+        columns:
+          - name: id
+          - name: name
+          - name: active
+          - name: type
+
+      - name: deal_changes
+        columns:
+          - name: deal_id
+          - name: change_time
+          - name: changed_filed_key
+          - name: new_value
+
+      - name: fields
+        columns:
+          - name: id
+          - name: filed_key
+          - name: name
+          - name: filed_value_options
+
+      - name: stages
+        columns:
+          - name: stage_id
+          - name: stage_name
+
+      - name: users
+        columns:
+          - name: id
+          - name: name
+          - name: email
+          - name: modified
