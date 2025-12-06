@@ -1,0 +1,133 @@
+version: 2
+
+models:
+  - name: stg_pipedrive_activity
+    description: "Staging table for Pipedrive activities with cleaned columns and audit metadata."
+    columns:
+      - name: activity_id
+        description: "Unique identifier for the activity."
+        tests:
+          - not_null
+      - name: activity_type
+        description: "ID linking to activity_types table."
+        tests:
+          - not_null
+      - name: deal_id
+        description: "ID of the associated deal."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_deal_changes')
+              field: deal_id
+      - name: user_id
+        description: "ID of the assigned user."
+        tests:
+          - relationships:
+              to: ref('stg_users')
+              field: id
+      - name: done_flag
+        description: "Boolean flag indicating if the activity is done."
+      - name: done_text
+        description: "Human-readable status of done_flag."
+      - name: due_date
+        description: "Due date of the activity, cast to date."
+      - name: _ingested_at
+        description: "Timestamp when this row was ingested."
+      - name: _updated_at
+        description: "Timestamp of the last dbt run for this row."
+
+  - name: stg_pipedrive_activity_types
+    description: "Staging table for activity types from Pipedrive."
+    columns:
+      - name: activity_type_id
+        description: "Unique ID of the activity type."
+        tests:
+          - not_null
+          - unique
+      - name: name
+        description: "Name of the activity type."
+      - name: active
+        description: "Boolean flag indicating if the activity type is active."
+      - name: type
+        description: "Category/type of the activity."
+      - name: _ingested_at
+        description: "Timestamp when this row was ingested."
+      - name: _updated_at
+        description: "Timestamp of the last dbt run for this row."
+
+  - name: stg_pipedrive_deal_changes
+    description: "Staging table for deal changes from Pipedrive."
+    columns:
+      - name: deal_id
+        description: "ID of the deal."
+        tests:
+          - not_null
+      - name: change_time
+        description: "Timestamp when the change occurred."
+      - name: changed_field
+        description: "Field that was changed."
+      - name: new_value
+        description: "New value of the changed field."
+      - name: _ingested_at
+        description: "Timestamp when this row was ingested."
+      - name: _updated_at
+        description: "Timestamp of the last dbt run for this row."
+
+  - name: stg_pipedrive_fields
+    description: "Staging table for Pipedrive custom fields."
+    columns:
+      - name: field_id
+        description: "Unique ID of the field."
+        tests:
+          - not_null
+          - unique
+      - name: field_key
+        description: "Key identifier for the field."
+      - name: name
+        description: "Human-readable field name."
+      - name: field_value
+        description: "Value associated with the field."
+      - name: _ingested_at
+        description: "Timestamp when this row was ingested."
+      - name: _updated_at
+        description: "Timestamp of the last dbt run for this row."
+
+  - name: stg_pipedrive_stages
+    description: "Staging table for deal stages from Pipedrive."
+    columns:
+      - name: stage_id
+        description: "Unique ID of the stage."
+        tests:
+          - not_null
+          - unique
+      - name: stage_name
+        description: "Name of the stage."
+      - name: user_id
+        description: "User responsible for the stage, if applicable."
+        tests:
+          - relationships:
+              to: ref('stg_users')
+              field: id
+      - name: _ingested_at
+        description: "Timestamp when this row was ingested."
+      - name: _updated_at
+        description: "Timestamp of the last dbt run for this row."
+
+  - name: stg_pipedrive_users
+    description: "Staging table for Pipedrive users with PII masked/hashed."
+    columns:
+      - name: user_id
+        description: "Unique user ID."
+        tests:
+          - not_null
+          - unique
+      - name: name_hash
+        description: "Indicates user's hashed version name."
+      - name: email_hash
+        description: "Indicates user's hashed version email."
+      - name: modified
+        description: "Timestamp of last modification from source."
+      - name: _ingested_at
+        description: "Timestamp when this row was ingested."
+      - name: _updated_at
+        description: "Timestamp of the last dbt run for this row."
