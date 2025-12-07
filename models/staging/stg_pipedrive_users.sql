@@ -6,8 +6,8 @@
     Notes:
         - contains pii column of customer
         - needs restricted access  on tables
-        - mask the pii columns (future scope)
-            - can be used
+        - md5 is used to mask the pii columns(name, email)
+            * for techdebt, SHA256 can be used instead md5 as sha256 is more reliable
 -----------------------------------------------------------------------------------------------------------*/
 
 /* ******************************* config ********************************************************************/
@@ -21,8 +21,8 @@
 /* *************************************** source query *******************************************************/
 select
     id as user_id,
-    name as user_name,
-    email as user_email,
+    md5(name) as name_hash,          -- hash the pii column using digest function as postgres supports di
+    md5(email) as email_hash,         -- hash the pii column using digest function as postgres supports digest
     cast(modified as timestamp) as modified_timestamp,
 
     now() as _ingested_at,
