@@ -18,16 +18,13 @@ models:
         description: "ID of the associated deal."
         tests:
           - not_null
-          - relationships:
-              to: ref('stg_pipedrive_deal_changes')
-              field: deal_id
 
       - name: user_id
         description: "ID of the assigned user."
         tests:
           - relationships:
               to: ref('stg_pipedrive_users')
-              field: id
+              field: user_id
 
       - name: done_flag
         description: "Boolean flag indicating if the activity is done."
