@@ -1,0 +1,83 @@
+version: 2
+
+models:
+  - name: int_deal_changes_enriched
+    description: |
+      Intermediate table of deal stage change events.
+      Used to produce major funnel KPIs (Lead Gen → Closing → Renewal).
+    columns:
+      - name: deal_changes_sk
+        tests: [not_null, unique]
+
+      - name: deal_id
+        tests: [not_null]
+
+      - name: change_timestamp
+        tests: [not_null]
+
+      - name: new_stage_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_pipedrive_stages')
+              field: stage_id
+
+      - name: kpi_name
+        tests: [not_null]
+
+      - name: _ingested_at
+        description: "Timestamp when this row was ingested."
+
+      - name: _updated_at
+        description: "Timestamp of the last dbt run for this row."
+
+  - name: int_activity_enriched_users
+    description: |
+      Intermediate table of all activities, enriched with activity type mappings
+      and user metadata. Produces funnel_sub_step for sub-step analysis and kpi_name
+      for parent funnel category (e.g., ‘Qualified Lead’, ‘Needs Assessment’).
+    columns:
+      - name: activity_id
+        tests: [not_null]
+
+      - name: deal_id
+        tests: [not_null]
+
+      - name: activity_user_id
+        tests: [not_null]
+
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_pipedrive_users')
+              field: user_id
+
+      - name: funnel_sub_step
+        tests: [not_null]
+
+      - name: kpi_name
+        tests: [not_null]
+
+      - name: event_date
+        tests: [not_null]
+
+      - name: done_flag
+
+      - name: done_text
+
+      - name: user_name_hashed
+
+      - name: user_email_hashed
+
+      - name: _ingested_at
+        description: "Timestamp when this row was ingested."
+
+      - name: _updated_at
+        description: "Timestamp of the last dbt run for this row."
+
+      - name: funnel_sub_step
+        tests:
+          - relationships:
+              to: ref('stg_pipedrive_activity_types')
+              field: activity_type_name

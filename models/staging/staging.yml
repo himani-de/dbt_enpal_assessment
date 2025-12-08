@@ -8,23 +8,27 @@ models:
         description: "Unique identifier for the activity."
         tests:
           - not_null
+
       - name: activity_type
         description: "ID linking to activity_types table."
         tests:
           - not_null
+
       - name: deal_id
         description: "ID of the associated deal."
         tests:
           - not_null
           - relationships:
-              to: ref('stg_deal_changes')
+              to: ref('stg_pipedrive_deal_changes')
               field: deal_id
+
       - name: user_id
         description: "ID of the assigned user."
         tests:
           - relationships:
-              to: ref('stg_users')
+              to: ref('stg_pipedrive_users')
               field: id
+
       - name: done_flag
         description: "Boolean flag indicating if the activity is done."
       - name: done_text
@@ -44,14 +48,19 @@ models:
         tests:
           - not_null
           - unique
+
       - name: name
         description: "Name of the activity type."
+
       - name: active
         description: "Boolean flag indicating if the activity type is active."
+
       - name: type
         description: "Category/type of the activity."
+
       - name: _ingested_at
         description: "Timestamp when this row was ingested."
+
       - name: _updated_at
         description: "Timestamp of the last dbt run for this row."
 
@@ -62,14 +71,19 @@ models:
         description: "ID of the deal."
         tests:
           - not_null
+
       - name: change_time
         description: "Timestamp when the change occurred."
+
       - name: changed_field
         description: "Field that was changed."
+
       - name: new_value
         description: "New value of the changed field."
+
       - name: _ingested_at
         description: "Timestamp when this row was ingested."
+
       - name: _updated_at
         description: "Timestamp of the last dbt run for this row."
 
@@ -81,14 +95,19 @@ models:
         tests:
           - not_null
           - unique
+
       - name: field_key
         description: "Key identifier for the field."
+
       - name: name
         description: "Human-readable field name."
+
       - name: field_value
         description: "Value associated with the field."
+
       - name: _ingested_at
         description: "Timestamp when this row was ingested."
+
       - name: _updated_at
         description: "Timestamp of the last dbt run for this row."
 
@@ -100,16 +119,20 @@ models:
         tests:
           - not_null
           - unique
+
       - name: stage_name
         description: "Name of the stage."
+
       - name: user_id
         description: "User responsible for the stage, if applicable."
         tests:
           - relationships:
               to: ref('stg_users')
               field: id
+
       - name: _ingested_at
         description: "Timestamp when this row was ingested."
+
       - name: _updated_at
         description: "Timestamp of the last dbt run for this row."
 
@@ -121,13 +144,18 @@ models:
         tests:
           - not_null
           - unique
+
       - name: name_hash
         description: "Indicates user's hashed version name."
+
       - name: email_hash
         description: "Indicates user's hashed version email."
+
       - name: modified
         description: "Timestamp of last modification from source."
+
       - name: _ingested_at
         description: "Timestamp when this row was ingested."
+
       - name: _updated_at
         description: "Timestamp of the last dbt run for this row."

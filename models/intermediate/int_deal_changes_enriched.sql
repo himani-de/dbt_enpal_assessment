@@ -9,7 +9,7 @@
 {{
     config(
         materialized='incremental',
-        unique_key='deal_change_sk',
+        unique_key='deal_changes_sk',
         incremental_strategy='merge',
         tags=['int','deal_changes']
     )
@@ -30,10 +30,6 @@ with raw_deal_changes as (
             when lower(changed_field_key) = 'stage_id'
             then new_value::int
         end as new_stage_id,
-        case
-            when lower(changed_field_key) = 'user_id'
-            then new_value::int
-        end as new_owner_id,
         -- audit columns or int layer
         current_timestamp as _ingested_at,
         current_timestamp as _updated_at
