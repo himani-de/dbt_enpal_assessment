@@ -6,9 +6,9 @@
 # - In real-world, PR builds would push :latest to a test/dev environment,
 #   while merges to master would push semantic version tags to prod.
 # - dbt target is set to dev for all steps.
-# Last updated: 2025-12-09
+# Last updated: 2025-12-10
 
-name: Build, Push, Deploy Container
+name: Deploy dbt Container
 
 on:
   push:
@@ -19,55 +19,7 @@ on:
       - main
 
 jobs:
-  build-and-push:
-    name: Build & Push Docker Image
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-
-    outputs:
-      image_tag: ${{ steps.docker_tag.outputs.tag }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Determine Docker image tag
-        id: docker_tag
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "tag=latest" >> $GITHUB_OUTPUT
-          else
-            if [ -f VERSION ]; then
-              VERSION=$(cat VERSION)
-            else
-              VERSION="0.1.${GITHUB_RUN_NUMBER}"
-            fi
-            echo "tag=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Build Docker image
-        run: |
-          IMAGE=ghcr.io/${{ github.repository }}/dbt-enpal-assessment:${{ steps.docker_tag.outputs.tag }}
-          docker build -t $IMAGE .
-
-      - name: Push Docker image
-        run: |
-          IMAGE=ghcr.io/${{ github.repository }}/dbt-enpal-assessment:${{ steps.docker_tag.outputs.tag }}
-          docker push $IMAGE
-
   deploy:
-    name: Deploy via dbt (target=dev)
-    needs: build-and-push
     runs-on: ubuntu-latest
 
     services:
@@ -76,26 +28,30 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_DB: ${{ secrets.DBT_TEST_DBNAME }}
-          POSTGRES_USER: ${{ secrets.DBT_TEST_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DBT_TEST_PASSWORD }}
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
         options: >-
-          --health-cmd "pg_isready -U ${{ secrets.DBT_TEST_USER }}"
+          --health-cmd "pg_isready -U test_user"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Run dbt inside Docker container
+      - name: Build Docker image
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}/dbt-enpal-assessment:latest
+          docker build -t $IMAGE .
+
+      - name: Run dbt inside Docker
         env:
           DBT_TEST_DBNAME: ${{ secrets.DBT_TEST_DBNAME }}
           DBT_TEST_USER: ${{ secrets.DBT_TEST_USER }}
           DBT_TEST_PASSWORD: ${{ secrets.DBT_TEST_PASSWORD }}
         run: |
-          IMAGE=ghcr.io/${{ github.repository }}/dbt-enpal-assessment:${{ needs.build-and-push.outputs.image_tag }}
+          IMAGE=ghcr.io/${{ github.repository }}/dbt-enpal-assessment:latest
           docker run --rm \
             -e DBT_TEST_DBNAME="$DBT_TEST_DBNAME" \
             -e DBT_TEST_USER="$DBT_TEST_USER" \
