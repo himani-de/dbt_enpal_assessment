@@ -9,7 +9,7 @@ enpal_assessment_project:
       dbname: "{{ env_var('DBT_TEST_DBNAME') }}"
       user: "{{ env_var('DBT_TEST_USER') }}"
       pass: "{{ env_var('DBT_TEST_PASSWORD') }}"
-      schema: dev
+      schema: "{{ target }}"
       keepalives: 1             # enables TCP keepalive
       keepalives_idle: 60       # seconds before keepalive ping
       connect_timeout: 10       # seconds for connection timeout
@@ -17,18 +17,4 @@ enpal_assessment_project:
       threads: 4                # dbt can run multiple models in parallel
       application_name: "dbt_enpal_dev"
       sslmode: prefer           # tries SSL if available, otherwise falls back to plain text
-    prod:
-      type: postgres
-      host: host.docker.internal
-      port: 5432
-      dbname: "{{ env_var('DBT_PROD_DBNAME') }}"
-      user: "{{ env_var('DBT_PROD_USER') }}"
-      pass: "{{ env_var('DBT_PROD_PASSWORD') }}"
-      schema: analytics
-      keepalives: 1
-      keepalives_idle: 60
-      connect_timeout: 10
-      retries: 1
-      threads: 4
-      application_name: "dbt_enpal"
-      sslmode: require            # Always use SSL. Fail if the server doesn’t support it.
+#place holder for prod profile configuratiom
