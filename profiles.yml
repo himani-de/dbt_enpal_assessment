@@ -4,7 +4,8 @@ enpal_assessment_project:
   outputs:
     dev:
       type: postgres
-      host: host.docker.internal # localhost is not reachable , Docker provides a special hostname to reach the host
+      host: localhost
+      #host: host.docker.internal # localhost is not reachable inside container , Docker provides a special hostname to reach the host
       port: 5432
       dbname: "{{ env_var('DBT_TEST_DBNAME') }}"
       user: "{{ env_var('DBT_TEST_USER') }}"
