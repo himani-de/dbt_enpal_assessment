@@ -54,7 +54,6 @@ jobs:
               VERSION="0.1.${GITHUB_RUN_NUMBER}"
             fi
             echo "tag=$VERSION" >> $GITHUB_OUTPUT
-          fi
 
       - name: Build Docker image
         run: |
@@ -71,13 +70,26 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Pull built image
-        run: |
-          IMAGE=ghcr.io/${{ github.repository }}/dbt-enpal-assessment:${{ needs.build-and-push.outputs.image_tag }}
-          docker pull $IMAGE
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: ${{ secrets.DBT_TEST_DBNAME }}
+          POSTGRES_USER: ${{ secrets.DBT_TEST_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DBT_TEST_PASSWORD }}
+        options: >-
+          --health-cmd "pg_isready -U ${{ secrets.DBT_TEST_USER }}"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
-      - name: Run dbt inside container
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run dbt inside Docker container
         env:
           DBT_TEST_DBNAME: ${{ secrets.DBT_TEST_DBNAME }}
           DBT_TEST_USER: ${{ secrets.DBT_TEST_USER }}
@@ -88,5 +100,4 @@ jobs:
             -e DBT_TEST_DBNAME="$DBT_TEST_DBNAME" \
             -e DBT_TEST_USER="$DBT_TEST_USER" \
             -e DBT_TEST_PASSWORD="$DBT_TEST_PASSWORD" \
-            $IMAGE dbt run --target dev
-          
+            $IMAGE dbt debug --target dev
