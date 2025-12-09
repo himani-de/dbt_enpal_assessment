@@ -85,8 +85,8 @@ jobs:
         run: |
           IMAGE=ghcr.io/${{ github.repository }}/dbt-enpal-assessment:${{ needs.build-and-push.outputs.image_tag }}
           docker run --rm \
-            -e DBT_TEST_DBNAME \
-            -e DBT_TEST_USER \
-            -e DBT_TEST_PASSWORD \
+            -e DBT_TEST_DBNAME="$DBT_TEST_DBNAME" \
+            -e DBT_TEST_USER="$DBT_TEST_USER" \
+            -e DBT_TEST_PASSWORD="$DBT_TEST_PASSWORD" \
             $IMAGE dbt run --target dev
           
