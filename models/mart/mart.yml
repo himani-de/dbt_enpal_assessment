@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: fact_rep_sales_funnel_monthly
+    description: "Monthly sales funnel report showing the number of deals per funnel step and KPI."
+    columns:
+      - name: month
+        description: "First day of the month for the aggregated period."
+        tests:
+          - not_null
+      - name: kpi_name
+        description: "Parent KPI name associated with the funnel step."
+        tests:
+          - not_null
+      - name: funnel_step
+        description: "Specific funnel step or sub-step, matching dim_sales_funnel."
+        tests:
+          - not_null
+      - name: deals_count
+        description: "Number of distinct deals in this KPI / funnel step for the month."
+        tests:
+          - not_null
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: ['month', 'funnel_step']
+      - dbt_utils.relationships:
+          column_name: funnel_step
+          to: ref('dim_sales_funnel')
+          field: funnel_step
+      - dbt_utils.expression_is_true:
+          expression: "deals_count >= 0"

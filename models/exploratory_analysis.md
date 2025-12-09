@@ -91,14 +91,16 @@ The intermediate layer (`int_`) combines staging tables to create **meaningful b
 
 1. **activity level aggregation**
    - Join `stg_pipdrive_activity` with `stg_pipedrive_activity_types` to map sub-steps (Sales Call 1, Sales Call 2)
-   - Join with `stg_users` for assigned user information
+   - Join with `stg_users` for assigned user information (not required for this use case but good to keep user level info at
+      intremediate level so that in future can be incorporated at reporting layer)
 
 2. **Stage mapping**
-   - Use `stg_stages` to map funnel stages (Lead Generation → Renewal/Expansion)
-   - Sub-steps from `stg_activity_type` are merged at the correct stage level (e.g., 2.1 → Sales Call 1)
+   - Use `stg_pipedrive_stages` to map funnel stages (Lead Generation → Renewal/Expansion)
+   - Merge activity sub-steps into the correct funnel stage
+     Example: Stage 2.1 → Sales Call 1
 
 3. **Funnel step creation**
-   - Each activity and deal is assigned a funnel step
+   - Each activity and deal is assigned a funnel step (e.g., Lead In, Qualified, Proposal Sent, Sales Call 1)
    - This supports aggregation for reporting KPIs
 
 4. **Intermediate table design**
@@ -110,20 +112,18 @@ The intermediate layer (`int_`) combines staging tables to create **meaningful b
 ## 5. Mart Layer -> build fact tables for reporting funnel
 
 - Build **reporting layer**:
-  - Aggregate `int_` tables by month
-  - Calculate KPIs like `deals_count` per funnel step
-  - Produce monthly sales funnel reports
-
-- Add **more tests**:
-  - `not_null` and `unique` on keys
-  - Foreign key relationships
-  - Validity checks on funnel steps
-
+  - Aggregates intermediate activity and deal tables by:
+    - month (date_month)
+    - funnel_step
+    - kpi_name
+    - deals_count
+    
 ### Summary
 
 - Staging layer: minimal transformations, clean and auditable
+- PII: hashed at staging
 - Intermediate layer: joins staging tables to create business entities
-- PII: hashed/masked at staging
-- add unique surrogate keys incrase table doesnt have a PK
+- Provides activity- and deal-level enriched entities
+- add unique surrogate keys ensures correct merge in int tables if doesnt have a PK
 - Ready for reporting layer: monthly sales funnel KPIs
 
