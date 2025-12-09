@@ -82,3 +82,4 @@ jobs:
       DBT_TARGET: dev
       # Pass the Docker image with dynamic tag to the deploy workflow
       REGISTRY_PATH: ghcr.io/${{ github.repository }}/dbt-enpal-assessment:${{ steps.docker_tag.outputs.tag }}
+
