@@ -28,6 +28,9 @@ jobs:
       packages: write
       id-token: write
 
+    outputs:
+      image_tag: ${{ steps.docker_tag.outputs.tag }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -42,7 +45,6 @@ jobs:
       - name: Determine Docker image tag
         id: docker_tag
         run: |
-          # PRs use 'latest', master uses version
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "tag=latest" >> $GITHUB_OUTPUT
           else
@@ -67,9 +69,23 @@ jobs:
   deploy:
     name: Deploy via dbt (target=dev)
     needs: build-and-push
-    uses: ./.github/workflows/deploy_model.yml
-    secrets: inherit
-    with:
-      environment: dev
-      DBT_TARGET: dev
-      REGISTRY_PATH: ghcr.io/${{ github.repository }}/dbt-enpal-assessment:${{ needs.build-and-push.outputs.docker_tag }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull built image
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}/dbt-enpal-assessment:${{ needs.build-and-push.outputs.image_tag }}
+          docker pull $IMAGE
+
+      - name: Run dbt inside container
+        env:
+          DBT_TEST_DBNAME: ${{ secrets.DBT_TEST_DBNAME }}
+          DBT_TEST_USER: ${{ secrets.DBT_TEST_USER }}
+          DBT_TEST_PASSWORD: ${{ secrets.DBT_TEST_PASSWORD }}
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}/dbt-enpal-assessment:${{ needs.build-and-push.outputs.image_tag }}
+          docker run --rm \
+            -e DBT_TEST_DBNAME \
+            -e DBT_TEST_USER \
+            -e DBT_TEST_PASSWORD \
+            $IMAGE dbt run --target dev
