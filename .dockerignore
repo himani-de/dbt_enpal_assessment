@@ -1,0 +1,5 @@
+dbt/logs
+dbt/target/
+dbt/.DS_Store
+dbt/.gitignore
+dbt/__pychache

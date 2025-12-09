@@ -1,0 +1,35 @@
+repos:
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.3.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: []
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: no-commit-to-branch
+        args: ['--pattern', '^(?!((fix|feat|docs|chore|refactor|test)\/[A-Z]{3,8}\-[0-9]{3,4}\[a-z\]+)|dbt-documentation$).*']
+
+  - repo: https://github.com/tconbeer/sqlfmt
+    rev: v0.21.4
+    hooks:
+     - id: sqlfmt
+       language_version: python
+       additional_dependencies: [".[jinjafmt]"]
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 24.10.0
+    hooks:
+      - id: black
+        language_version: python3.11
