@@ -4,12 +4,12 @@ enpal_assessment_project:
   outputs:
     dev:
       type: postgres
-      host: localhost
+      host: host.docker.internal # localhost is not reachable , Docker provides a special hostname to reach the host
       port: 5432
       dbname: "{{ env_var('DBT_TEST_DBNAME') }}"
       user: "{{ env_var('DBT_TEST_USER') }}"
       pass: "{{ env_var('DBT_TEST_PASSWORD') }}"
-      schema: dev_analytics
+      schema: dev
       keepalives: 1             # enables TCP keepalive
       keepalives_idle: 60       # seconds before keepalive ping
       connect_timeout: 10       # seconds for connection timeout
@@ -19,7 +19,7 @@ enpal_assessment_project:
       sslmode: prefer           # tries SSL if available, otherwise falls back to plain text
     prod:
       type: postgres
-      host: 127.0.0.1
+      host: host.docker.internal
       port: 5432
       dbname: "{{ env_var('DBT_PROD_DBNAME') }}"
       user: "{{ env_var('DBT_PROD_USER') }}"
