@@ -9,7 +9,7 @@ enpal_assessment_project:
       dbname: "{{ env_var('DBT_TEST_DBNAME') }}"
       user: "{{ env_var('DBT_TEST_USER') }}"
       pass: "{{ env_var('DBT_TEST_PASSWORD') }}"
-      schema: "{{ target }}"
+      schema: "dev"
       keepalives: 1             # enables TCP keepalive
       keepalives_idle: 60       # seconds before keepalive ping
       connect_timeout: 10       # seconds for connection timeout
