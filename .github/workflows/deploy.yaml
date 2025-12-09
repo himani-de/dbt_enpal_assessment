@@ -1,14 +1,12 @@
-/*------------------------------------------------------------------------------------------------------
-  # Currently, this deploy yaml file builds a Docker image for the dbt project
-  # - Pushes it to GitHub Container Registry (GHCR)
-  #   Uses dbt target to decide which schema to deploy:
-  #   - target=dev → schema=dev
-  #   - target=prod → schema=prod (if added later)
-  # - In real-world, PR builds would push :latest to a test/dev environment,
-  #   while merges to master would push semantic version tags to prod.
-  # - dbt target is set to dev for all steps.
-  # Last updated: 2025-12-09
------------------------------------------------------------------------------------------------------------*/
+# Currently, this deploy yaml file builds a Docker image for the dbt project
+# - Pushes it to GitHub Container Registry (GHCR)
+#   Uses dbt target to decide which schema to deploy:
+#   - target=dev → schema=dev
+#   - target=prod → schema=prod (if added later)
+# - In real-world, PR builds would push :latest to a test/dev environment,
+#   while merges to master would push semantic version tags to prod.
+# - dbt target is set to dev for all steps.
+# Last updated: 2025-12-09
 
 name: Build, Push, Deploy Container
 
