@@ -1,0 +1,85 @@
+/*------------------------------------------------------------------------------------------------------
+  # currently this workflow is designed as per this assessment as we are taking the postgres db 
+  #  where we are deploying model as dev but in real world  the steps like dry run, code coverage etc.
+  #   points to prod data with the changes thatw e raise in our PR but here we have only env for this assessment
+   #  so, we will use target as dev
+  # Last updated: 2025-12-09
+-----------------------------------------------------------------------------------------------------------*/
+
+name: Dev workflow
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "dbt_enpal_assessment/**"
+      - "Dockerfile"
+      - "requirements.txt"
+      - ".github/**"
+  workflow_dispatch:
+
+jobs:
+  dbt-dry-run:
+    name: Dry run dbt models
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        id: setup-python
+        with:
+          python-version: "3.11"
+
+      - name: Install requirements
+        run: pip install -r dev_requirements.txt
+
+      - name: Dry run models
+        env:
+          GITHUB_TOKEN: ${{ secrets.DATASTRATEGY_GH_TOKEN }}
+          DATA_ROOM_DBT_IS_CI_RUN: "true"
+        run: |-
+          dbt deps --project-dir=dbt
+          dbt docs generate --project-dir=dbt --profiles-dir=dbt --target=prod --empty-catalog
+          dbt-dry-run --project-dir=dbt --profiles-dir=dbt --target=prod --full-refresh
+
+  dbt-coverage:
+    name: Check dbt models doc and test coverage
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        id: setup-python
+        with:
+          python-version: "3.11"
+
+      - name: Install requirements
+        run: pip install -r dev_requirements.txt
+
+      - name: Check if required dbt documentation and tests are covered
+        env:
+          GITHUB_TOKEN: ${{ secrets.DATASTRATEGY_GH_TOKEN }}
+        run: |-
+          set -e  # Exit immediately if a command exits with a non-zero status
+          dbt deps --project-dir=dbt
+          dbt docs generate --project-dir=dbt --profiles-dir=dbt --target=prod --select "semantic"
+          dbt run-operation required_tests --project-dir=dbt --profiles-dir=dbt --target=prod
+          dbt-coverage compute doc --cov-report coverage-doc.json --project-dir=dbt --model-path-filter models/semantic --cov-fail-under 0.9 --output-format string
+          dbt-coverage compute test --cov-report coverage-test.json --project-dir=dbt --model-path-filter models/semantic --cov-fail-under 0.05 --output-format string
+
+  deploy-test:
+    name: Deploy to test environment (Postgres, target=dev)
+    needs: [ dbt-coverage, dbt-dry-run ]
+    uses: ./.github/workflows/deploy.yaml
+    secrets: inherit
+    with:
+      environment: test
+      DBT_TARGET: dev

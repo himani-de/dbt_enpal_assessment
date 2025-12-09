@@ -1,0 +1,6 @@
+-r requirements.txt
+
+dbt-coverage
+dbt-dry-run
+pre-commit
+shandy-sqlfmt[jinjafmt]

@@ -1,0 +1,47 @@
+name: "Run pre-commit checks"
+
+on:
+  pull_request:
+    branches: ["master"]
+
+  workflow_dispatch:
+
+jobs:
+  run-pre-commit:
+    name: Pre-commit checks
+    runs-on: size/small
+    environment:
+      name: test
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r dev_requirements.txt
+          pre-commit install --install-hooks -t pre-commit -t commit-msg
+
+      - name: Get list of changed files
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          list-files: shell
+          filters: |
+            all:
+              - "**"
+
+      - name: Run pre-commit
+        run: pre-commit run --color always --show-diff-on-failure --files ${{ steps.filter.outputs.all_files }}
+        continue-on-error: true
+
+      - name: Commit pre-commit fixes, if any
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: apply pre-commit fixes"
+          commit_options: "--no-verify"

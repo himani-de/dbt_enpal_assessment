@@ -1,0 +1,84 @@
+/*------------------------------------------------------------------------------------------------------
+  # Currently, this deploy yaml file builds a Docker image for the dbt project
+  # - Pushes it to GitHub Container Registry (GHCR)
+  # - Deploys models to a Postgres DB using target=dev
+  # - In real-world, PR builds would push :latest to a test/dev environment,
+  #   while merges to master would push semantic version tags to prod.
+  # - dbt target is set to dev for all steps.
+  # Last updated: 2025-12-09
+-----------------------------------------------------------------------------------------------------------*/
+
+name: Build, Push, Deploy Container
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-and-push:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+
+    # GitHub token permissions for container registry and repo
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      # Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Log in to GitHub Container Registry (GHCR)
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Determine Docker image tag dynamically
+      - name: Determine Docker image tag
+        id: docker_tag
+        run: |
+          # If this is a PR, tag the image as 'latest'
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          else
+            # If merged to master, use semantic version from VERSION file
+            # or auto-generate one for demonstration purposes
+            if [ -f VERSION ]; then
+              VERSION=$(cat VERSION)
+            else
+              VERSION="0.1.${GITHUB_RUN_NUMBER}"
+            fi
+            echo "tag=$VERSION" >> $GITHUB_OUTPUT
+
+      # Build the Docker image
+      - name: Build Docker image
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}/dbt-enpal-assessment:${{ steps.docker_tag.outputs.tag }}
+          docker build -t $IMAGE .
+
+      # Push Docker image to GitHub Container Registry
+      - name: Push Docker image
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}/dbt-enpal-assessment:${{ steps.docker_tag.outputs.tag }}
+          docker push $IMAGE
+
+  # Deploy job
+  deploy:
+    name: Deploy via dbt (Postgres, target=dev)
+    needs: build-and-push
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      environment: test
+      DBT_TARGET: dev
+      # Pass the Docker image with dynamic tag to the deploy workflow
+      REGISTRY_PATH: ghcr.io/${{ github.repository }}/dbt-enpal-assessment:${{ steps.docker_tag.outputs.tag }}
