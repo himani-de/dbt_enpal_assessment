@@ -59,7 +59,7 @@ deduplicated_deal_changes as (
 deal_changes_enriched as (
     select
         ddc.*,
-        s.stage_name as kpi_name
+        {{ map_stage_name_to_kpi('s.stage_name') }} as kpi_name
     from deduplicated_deal_changes ddc
     left join {{ ref('stg_pipedrive_stages') }} s
          on ddc.new_stage_id = s.stage_id
