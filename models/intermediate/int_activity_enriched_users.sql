@@ -48,7 +48,8 @@ activity_with_user as (
         awt.funnel_sub_step,
         awt.done_flag,
         awt.done_text,
-        {{ map_activity_name_to_kpi('funnel_sub_step') }} as kpi_name,
+        {{ map_activity_name_to_funnel_step('funnel_sub_step') }} as funnel_step,
+        {{ map_stage_name_to_kpi('awt.funnel_sub_step') }} as kpi_name, -- parent KPI
         awt.due_date::timestamp as event_date,
         u.user_id,
         u.name_hash as user_name_hashed,
