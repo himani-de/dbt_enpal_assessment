@@ -1,0 +1,16 @@
+# dbt compiled directories
+/target/
+/run/
+/logs/
+
+# dbt package dependencies
+/dbt_packages/
+
+# Local environment / IDE files
+*.pyc
+*.pyo
+__pycache__/
+*.DS_Store
+.idea/
+.vscode/
+venv/
