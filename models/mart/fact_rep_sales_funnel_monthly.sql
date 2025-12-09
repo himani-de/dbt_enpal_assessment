@@ -13,15 +13,9 @@
 -- cte1: monthly activity with funnel step (from int activity table)
 with monthly_activity_funnel as (
     select
-        date_trunc('month', event_date) as month,
-        -- kpi_name from macro
-        {{ map_activity_name_to_kpi('funnel_sub_step') }} as kpi_name,
-        -- map sub-steps to dim funnel_step values
-        case funnel_sub_step
-            when 'Sales Call 1' then '2.1'
-            when 'Sales Call 2' then '3.1'
-            else funnel_sub_step
-        end as funnel_step,
+        date_trunc('month', event_date) as month_start,
+        kpi_name,
+        funnel_step,       -- matching to dim funnel
         deal_id
     from {{ ref('int_activity_enriched_users') }}
 ),
@@ -29,9 +23,9 @@ with monthly_activity_funnel as (
 -- cte2: monthly deal stage changes (main KPI only, no sub-steps)
 monthly_deal_facts as (
     select
-        date_trunc('month', change_timestamp) as month,
+        date_trunc('month', change_timestamp) as month_start,
         kpi_name,         -- main stage KPI
-        kpi_name as funnel_step,
+        {{ map_activity_name_to_funnel_step('kpi_name') }} as funnel_step,
         deal_id
     from {{ ref('int_deal_changes_enriched') }}
 ),
@@ -46,7 +40,7 @@ monthly_report_funnel as (
 -- final aggregation: aggregate counts per month + funnel_step
 monthly_aggregated as (
     select
-        month,
+        month_start,
         kpi_name,
         funnel_step,
         count(distinct deal_id) as deals_count
@@ -56,7 +50,7 @@ monthly_aggregated as (
 
 -- Join with dimension table for consistent ordering and labels
 select
-    coalesce(mg.month, current_date) as month,
+    coalesce(mg.month_start, current_date) as month_start,
     dsf.kpi_name,
     dsf.funnel_step,
     coalesce(mg.deals_count, 0) as deals_count
@@ -64,4 +58,4 @@ from {{ ref('dim_sales_funnel') }} dsf
 left join monthly_aggregated mg
     on trim(lower(dsf.funnel_step)) = trim(lower(mg.funnel_step))
     --on dsf.funnel_step = mg.funnel_step
-order by dsf.step_order, month
+order by dsf.step_order, month_start

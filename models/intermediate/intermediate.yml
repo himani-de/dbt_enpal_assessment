@@ -60,7 +60,10 @@ models:
         tests: [not_null]
 
       - name: event_date
-        tests: [not_null]
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "event_date <= current_timestamp"
 
       - name: done_flag
 
