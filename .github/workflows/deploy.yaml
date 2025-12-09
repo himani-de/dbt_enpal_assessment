@@ -89,3 +89,4 @@ jobs:
             -e DBT_TEST_USER \
             -e DBT_TEST_PASSWORD \
             $IMAGE dbt run --target dev
+          
