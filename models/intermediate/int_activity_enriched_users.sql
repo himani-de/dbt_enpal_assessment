@@ -47,14 +47,8 @@ activity_with_user as (
         awt.user_id as activity_user_id,
         awt.funnel_sub_step,
         awt.done_flag,
-        awt.done_text,          -- include done_text
-        case
-            when awt.funnel_sub_step = 'Sales Call 1' then 'Qualified Lead'
-            when awt.funnel_sub_step = 'Sales Call 2' then 'Needs Assessment'
-            when awt.funnel_sub_step = 'Follow Up Call' then 'Follow-up/Customer Success'
-            when awt.funnel_sub_step = 'After Close Call' then 'Closing'
-            else null
-        end as kpi_name,
+        awt.done_text,
+        {{ map_activity_name_to_kpi('funnel_sub_step') }} as kpi_name,
         awt.due_date::timestamp as event_date,
         u.user_id,
         u.name_hash as user_name_hashed,
