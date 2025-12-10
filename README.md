@@ -49,12 +49,12 @@ CI/CD for the crm pipedrive data.
    - configure your profile.yml with your postgres credentials
    - install dbt-core
    - dbt debug(if everything is fine with setup)
-   - dbt run --select model_name
-
-     ```dbt run -select int_activity_enriched_users```
-
+     ```bash
+   # Run a single model
+    dbt run --select int_activity_enriched_users
+   # Run all models with a tag
+    dbt run --select 'tag:stg'
      ```dbt run --select 'tag:stg'```
-
    - dbt docs generate
    - dbt docs serve
 This is how the dbt lineage will look like on dbt docs
