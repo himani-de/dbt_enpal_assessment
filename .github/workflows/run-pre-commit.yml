@@ -37,4 +37,4 @@ jobs:
       # Run pre-commit only on changed files
       - name: Run pre-commit hooks
         run: |
-          pre-commit run --color always --show-diff-on-failure --files $(cat changed_files.txt)
+              pre-commit run --all-files --color always --show-diff-on-failure
