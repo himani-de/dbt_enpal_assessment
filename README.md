@@ -1,4 +1,4 @@
-## overview
+## Overview
 This repo demonstrates a production level dbt modelling style and delivers  the model layers, test, access, 
 CI/CD for the crm pipedrive data.
 
@@ -54,7 +54,7 @@ to proceed with modeling steps
         - push image to prod registry and create semantic release
     This is what a complete cycle looks like.
     
-## How to run locally
+### How to run locally
    - Fork the original repo and add these files
    - configure your profile.yml with your postgres credentials
    - install dbt-core and postgres adaptar
