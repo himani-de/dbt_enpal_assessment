@@ -12,7 +12,7 @@ to proceed with modeling steps
     - mart -> final dim.fact layer for the aggregation for reporting and dashboards
     - access view -> stakeholder facing views to deal with access
   - PII handling:
-    - There are user's personal data in users table , so while taking it in our staging layer, we have hashed it using md5 for now
+    - There are user's personal data in users table(name, email) , so while taking it in our staging layer, we have hashed it using md5 for now
     - but, for more strong level masking/hashing we can use sha256
   - Model Tests:
     - Each layer ahs its own set of tests used mostly from inhouse dbt_utils
