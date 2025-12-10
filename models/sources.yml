@@ -1,3 +1,5 @@
+# note: As these tables dont ahve ny relevant date or timestamp column, we cannot add any meaningful freshness check on source.
+
 version: 2
 sources:
   - name: pipedrive_crm

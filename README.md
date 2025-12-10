@@ -1,11 +1,18 @@
 ## overview
 This repo demonstrates a production level dbt modelling style and delivers  the model layers, test, access, 
 CI/CD for the crm pipedrive data.
+
+## After exoloratory analysis, this entity relationship diagram is created to proceed with modeling steps
+   source: https://www.mermaidchart.com/app/dashboard
+   ![entity_relationship](dbt-docs/model_er.png)
   - Model layers:
     - staging -> raw data from source with minimal changes
     - intermediate -> join staging table to follow the business goal
     - mart -> final dim.fact layer for the aggregation for reporting and dashboards
     - access view -> stakeholder facing views to deal with access
+  - PII handling:
+    - There are user's personal data in users table , so while taking it in our staging layer, we have hashed it using md5 for now
+    - but, for more strong level masking/hashing we can use sha256
   - Model Tests:
     - Each layer ahs its own set of tests used mostly from inhouse dbt_utils
   - Model documentation:
