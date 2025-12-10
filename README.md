@@ -25,7 +25,7 @@ to proceed with modeling steps
     - Macros created to map the funnel step and kpi to avoid manual mapping in model files. This will decrease possibility of typos, frequent changes
       in model files and becomes a central place to do the recurrring changes and avoid change in model itself
     - This is how schema is created with target env prefix in our database
-      ![schema_name](dbt-docs/schema_name.png)
+      ![schema](dbt-docs/schema_name.png)
   - profile:
     - if there are database credentials needs to be sued in profiles.yml then its recommended to use github secrets
     - for local run create a local profile yml that will be in your machine and not exposed to outside world to keep
