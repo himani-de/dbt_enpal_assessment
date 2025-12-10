@@ -55,7 +55,7 @@ to proceed with modeling steps
 ## How to run locally
    - Fork the original repo and add these files
    - configure your profile.yml with your postgres credentials
-   - install dbt-core
+   - install dbt-core and postgres adaptar
    - dbt debug(if everything is fine with setup)
    ### Run a single model
     ```dbt run --select int_activity_enriched_users --taregt:dev```
