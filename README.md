@@ -29,7 +29,7 @@ to proceed with modeling steps
     - for local run create a local profile yml that will be in your machine and not exposed to outside world to keep
       the sensitive credentials safe
   - dbt_project.yml:
-    - create a dbt standard project yaml and add additional parameter if there are any vars to be sued in models etc.
+    - create a dbt standard project yaml and add additional parameter if there are any vars to be used in models etc.
   - packages:
     - dbt has inbuilt few packages that can be used like dbt_utils, codegen
     - add the version
