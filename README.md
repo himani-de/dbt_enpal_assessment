@@ -6,31 +6,31 @@ CI/CD for the crm pipedrive data.
     - intermediate -> join staging table to follow the business goal
     - mart -> final dim.fact layer for the aggregation for reporting and dashboards
     - access view -> stakeholder facing views to deal with access
-  Model Tests:
+  - Model Tests:
     - Each layer ahs its own set of tests used mostly from inhouse dbt_utils
-  Model documentation:
+  - Model documentation:
     - every layer has its yml file that has description about model, columns, some basic tests to ensure data correctness and integrity
     - data contract is also added to follow data governance norms and policies set by the team and its stakeholders like slas,
       business owner, freshness etc and can be extended.
-  Macros
+  - Macros
     - Macros created to deal with automatic schema generation to avoid manual creation and increase reusability in diff environments
     - Macros created to map the funnel step and kpi to avoid manual mapping in model files. This will decrease possibility of typos, frequent changes
       in model files and becomes a central place to do the recurrring changes and avoid change in model itself
-  profile:
+  - profile:
     - if there are database credentials needs to be sued in profiles.yml then its recommended to use github secrets
     - for local run create a local profile yml that will be in your machine and not exposed to outside world to keep
       the sensitive credentials safe
-  dbt_project.yml:
+  - dbt_project.yml:
     - create a dbt standard project yaml and add additional parameter if there are any vars to be sued in models etc.
-  packages:
+  - packages:
     - dbt has inbuilt few packages that can be used like dbt_utils, codegen
     - add the version
     - do dbt deps and you are ready to use it
-  requirements.txt: 
+  - requirements.txt: 
     - add dbt and its adaptar version for the installation
     - dbt-core==1.9.1
     - dbt-postgres==1.9.1
-  CI/CD:
+  - CI/CD:
     - add workflow files like deploy.yaml, dev_workflow yaml etc. in .github/workflows file 
     - here, we have added workflow files but assuming its a fork repo and lacks some permission from its parent repo
       to read secrets from parent repo. Hence, getting run is getting failed, but this is how we can setup our giyhub actions to:
