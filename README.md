@@ -53,7 +53,8 @@ CI/CD for the crm pipedrive data.
     ```dbt run --select int_activity_enriched_users --taregt:dev```
    ### Run all models with a tag
      ```dbt run --select 'tag:stg' --target:dev```
-   - dbt docs generate
-   - dbt docs serve
+   ### Generate and serve docs locally
+    ```dbt docs generate```
+    ```dbt docs serve```
 This is how the dbt lineage will look like on dbt docs
 ![dbt-sales-funnel-lineage](dbt-docs/lineage.png)
