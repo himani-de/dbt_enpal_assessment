@@ -25,3 +25,10 @@ models:
         description: "Number of distinct deals in this KPI / funnel step for the month."
         tests:
           - not_null
+  # add data contract and can be extended as per company standard
+    meta:
+      owner: "data_team@workemail.com"
+      business_contact: "jabc@workemail.com"
+      sla: "24h"
+      data_contract_version: "1.0"
+      freshness_expectation: "updated daily by 2 AM"
