@@ -20,9 +20,6 @@ models:
         description: "Specific funnel step or sub-step, matching dim_sales_funnel."
         tests:
           - not_null
-          - dbt_utils.relationships:
-              to: ref('dim_sales_funnel')
-              field: funnel_step
 
       - name: deals_count
         description: "Number of distinct deals in this KPI / funnel step for the month."

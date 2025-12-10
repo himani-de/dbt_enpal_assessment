@@ -1,0 +1,30 @@
+version: 2
+models:
+  - name: monthly_sales_funnel
+    description: |
+      This view is created on top of fact re sales funnel and can be used to give access to stakeholders to their usage.
+    config:
+      contract:
+        enforced: true
+      grants:
+        roles/bigquery.dataViewer:
+          - user:abc@workemail.com
+    columns:
+      - name: month_start
+        data_type: timestamp
+        description: The fisr day of the month for the kpi
+        data_tests:
+          - not_null
+      - name: kpi_name
+        data_type: text
+        description: The name of the kpi represents the funnel
+        data_tests:
+          - not_null
+      - name: funnel_step
+        data_type: text
+        description: Indicates the funnel sub steps
+        data_tests: not_null
+      - name: deals_count
+        data_type: int
+        description: shows agg no of deal count per month
+        data_tests: not_null
