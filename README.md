@@ -68,3 +68,15 @@ to proceed with modeling steps
     ```dbt docs serve```
 This is how the dbt lineage will look like on dbt docs
 ![dbt-sales-funnel-lineage](dbt-docs/lineage.png)
+
+### sources used in this task:
+   - dbt best practices / guides – helpful for macros, schema management, and naming conventions:
+     - https://docs.getdbt.com/docs/guides/best-practices
+   - Partitioning tables in Postgres – a practical guide:
+     - https://www.postgresql.org/docs/current/ddl-partitioning.html
+   - Official pre-commit framework docs – setup, .pre-commit-config.yaml, hooks list:
+     - https://pre-commit.com/
+   - Integrating pre-commit with dbt projects
+     - https://www.getdbt.com/blog/pre-commit-for-dbt/
+   - pipedrive crm:
+     - https://developers.pipedrive.com/docs/api/v1
