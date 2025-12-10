@@ -2,7 +2,8 @@
 This repo demonstrates a production level dbt modelling style and delivers  the model layers, test, access, 
 CI/CD for the crm pipedrive data.
 
-### After exoloratory analysis, this entity relationship diagram is created to proceed with modeling steps
+### After exoloratory analysis, this entity relationship diagram is created using mermaid(text-based diagramming tool)
+to proceed with modeling steps
    source: https://www.mermaidchart.com/app/dashboard
    ![entity_relationship](dbt-docs/model_er.png)
   - Model layers:
