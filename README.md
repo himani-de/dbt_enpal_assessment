@@ -52,7 +52,6 @@ CI/CD for the crm pipedrive data.
    ### Run a single model
     ```dbt run --select int_activity_enriched_users```
    ### Run all models with a tag
-    dbt run --select 'tag:stg'
      ```dbt run --select 'tag:stg'```
    - dbt docs generate
    - dbt docs serve
