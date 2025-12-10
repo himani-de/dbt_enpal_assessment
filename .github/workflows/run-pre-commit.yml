@@ -27,13 +27,6 @@ jobs:
           pip install -r dev_requirements.txt
           pip install pre-commit
 
-      # List changed files
-      - name: Get list of changed files
-        id: files
-        run: |
-          git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changed_files.txt
-          cat changed_files.txt
-
       # Run pre-commit only on changed files
       - name: Run pre-commit hooks
         run: |
