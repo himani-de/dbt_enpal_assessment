@@ -12,11 +12,9 @@ name: Deploy dbt Container
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   deploy:
@@ -41,7 +39,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set dbt environment variables
+      - name: Export DBT environment variables
         run: |
           echo "DBT_TEST_DBNAME=test_db" >> $GITHUB_ENV
           echo "DBT_TEST_USER=test_user" >> $GITHUB_ENV
@@ -53,13 +51,9 @@ jobs:
           docker build -t $IMAGE .
 
       - name: Run dbt inside Docker
-        env:
-          DBT_TEST_DBNAME: ${{ secrets.DB_NAME }}
-          DBT_TEST_USER: ${{ secrets.DB_USER }}
-          DBT_TEST_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
           IMAGE=ghcr.io/${{ github.repository }}/dbt-enpal-assessment:latest
-          docker run --rm \
+          docker run --network host --rm \
             -e DBT_TEST_DBNAME="$DBT_TEST_DBNAME" \
             -e DBT_TEST_USER="$DBT_TEST_USER" \
             -e DBT_TEST_PASSWORD="$DBT_TEST_PASSWORD" \
