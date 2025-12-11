@@ -4,7 +4,8 @@
         Contains historical changes for deals to track status and updates.
         Source: public.deal_changes
     Notes:
-        - change_time is the source of truth for freshness
+        - change_time is the source of truth deal change status
+   last_updated: 07.12.2025
 -----------------------------------------------------------------------------------------------------------*/
 
 /* ******************************* config ********************************************************************/

@@ -4,7 +4,8 @@
         Represents all deal stages in the pipeline for mapping funnel steps.
         Source: public.stages
     Notes:
-        - stage_name maps to funnel steps
+        - stage_name maps to funnel main steps
+    last_updated: 07.12.2025
 -----------------------------------------------------------------------------------------------------------*/
 
 /* ******************************* config ********************************************************************/

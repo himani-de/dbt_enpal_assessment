@@ -3,6 +3,7 @@
         Staging table for Pipedrive fields metadata.
         Contains metadata about custom fields in Pipedrive for use in downstream models.
         Source: public.fields
+    last_updated: 07.12.2025
 -----------------------------------------------------------------------------------------------------------*/
 
 /* ******************************* config ********************************************************************/

@@ -95,7 +95,7 @@ The intermediate layer (`int_`) combines staging tables to create **meaningful b
       intremediate level so that in future can be incorporated at reporting layer)
 
 2. **Stage mapping**
-   - Use `stg_pipedrive_stages` to map funnel stages (Lead Generation → Renewal/Expansion)
+   - Use `stg_pipedrive_stages` to map funnel main steps (Lead Generation → Renewal/Expansion)
    - Merge activity sub-steps into the correct funnel stage
      Example: Stage 2.1 → Sales Call 1
 

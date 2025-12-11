@@ -8,6 +8,7 @@
         - needs restricted access  on tables
         - md5 is used to mask the pii columns(name, email)
             * for techdebt, SHA256 can be used instead md5 as sha256 is more reliable
+    last_updated: 07.12.2025
 -----------------------------------------------------------------------------------------------------------*/
 
 /* ******************************* config ********************************************************************/
