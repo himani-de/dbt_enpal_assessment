@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: fact_rep_sales_funnel_monthly
+    description: "Monthly sales funnel report showing the number of deals per funnel step and KPI."
+    columns:
+      - name: month_start
+        description: "First day of the month for the aggregated period."
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "date_trunc('month', month_start) = month_start"
+
+      - name: kpi_name
+        description: "Parent KPI name associated with the funnel step."
+        tests:
+          - not_null
+
+      - name: funnel_step
+        description: "Specific funnel step or sub-step, matching dim_sales_funnel."
+        tests:
+          - not_null
+
+      - name: deals_count
+        description: "Number of distinct deals in this KPI / funnel step for the month."
+        tests:
+          - not_null
+  # add data contract and can be extended as per company standard
+    meta:
+      owner: "data_team@workemail.com"
+      business_contact: "jabc@workemail.com"
+      sla: "24h"
+      data_contract_version: "1.0"
+      freshness_expectation: "updated daily by 2 AM"

@@ -1,0 +1,72 @@
+  # currently this workflow is designed as per this assessment as we are taking the postgres db
+  #  where we are deploying model as dev but in real world  the steps like dry run, code coverage etc.
+  #   points to prod data with the changes thatw e raise in our PR but here we have only env for this assessment
+   #  so, we will use target as dev
+  # Last updated: 2025-12-10
+
+name: Dev workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "dbt_enpal_assessment/**"
+      - "Dockerfile"
+      - "requirements.txt"
+      - ".github/**"
+  workflow_dispatch:
+
+jobs:
+  dbt-dry-run:
+    name: Dry run dbt models
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install requirements
+        run: pip install -r dev_requirements.txt
+
+      - name: Dry run dbt models
+        env:
+          GITHUB_TOKEN: ${{ secrets.DATASTRATEGY_GH_TOKEN }}
+          DATA_ROOM_DBT_IS_CI_RUN: "true"
+        run: |
+          dbt deps --project-dir=dbt
+          dbt docs generate --project-dir=dbt --profiles-dir=dbt --target=dev --empty-catalog
+          dbt-dry-run --project-dir=dbt --profiles-dir=dbt --target=dev --full-refresh
+
+  dbt-coverage:
+    name: Check dbt documentation & tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install requirements
+        run: pip install -r dev_requirements.txt
+
+      - name: Run coverage checks
+        env:
+          GITHUB_TOKEN: ${{ secrets.DATASTRATEGY_GH_TOKEN }}
+        run: |
+          dbt deps --project-dir=dbt
+          dbt docs generate --project-dir=dbt --profiles-dir=dbt --target=dev --select "semantic"
+          dbt run-operation required_tests --project-dir=dbt --profiles-dir=dbt --target=dev
+
+  deploy-test:
+    name: Deploy to test environment
+    needs: [dbt-dry-run, dbt-coverage]
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      environment: dev
+      DBT_TARGET: dev
+
